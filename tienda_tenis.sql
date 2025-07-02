@@ -20,8 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `tienda_tenis`
 --
-CREATE DATABASE IF NOT EXISTS `tienda_tenis` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `tienda_tenis`;
+CREATE DATABASE IF NOT EXISTS `tienda_computadores` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `tienda_computadores`;
 
 -- --------------------------------------------------------
 
