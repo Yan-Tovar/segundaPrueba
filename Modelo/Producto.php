@@ -1,33 +1,33 @@
 <?php
 class Producto{
-    private $nombre;
-    private $descripcion;
+    private $marca;
+    private $modelo;
+    private $tipo;
+    private $especificaciones;
     private $precio;
-    private $talla;
-    private $imagen;
     private $categoria;
-    public function __construct($nom, $des, $pre, $tal, $ima, $cat){
-        $this->nombre = $nom;
-        $this->descripcion = $des;
+    public function __construct($mar, $mod, $tip, $esp, $pre, $cat){
+        $this->marca = $mar;
+        $this->modelo = $mod;
+        $this->tipo = $tip;
+        $this->especificaciones = $esp;
         $this->precio = $pre;
-        $this->talla = $tal;
-        $this->imagen = $ima;
         $this->categoria = $cat;
     }
-    public function obtenerNombre(){
-        return $this->nombre;
+    public function obtenerMarca(){
+        return $this->marca;
     }
-    public function obtenerDescripcion(){
-        return $this->descripcion;
+    public function obtenerModelo(){
+        return $this->modelo;
+    }
+    public function obtenerTipo(){
+        return $this->tipo;
+    }
+    public function obtenerEspecificaciones(){
+        return $this->especificaciones;
     }
     public function obtenerPrecio(){
         return $this->precio;
-    }
-    public function obtenerTalla(){
-        return $this->talla;
-    }
-    public function obtenerImagen(){
-        return $this->imagen;
     }
     public function obtenerCategoria(){
         return $this->categoria;

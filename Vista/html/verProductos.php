@@ -26,28 +26,35 @@ if($_SESSION['rol'] == "admin"){
         <div class="admin-section">
             <h3>Productos</h3>
             <form class="form-admin" action="index.php?accion=agregarProducto" method="POST" enctype="multipart/form-data">
-            <input type="text" name="nombre" placeholder="Nombre del producto" required>
-            <input type="text" name="descripcion" placeholder="Descripcion" required>
-            <input type="number" name="precio" placeholder="Precio" required>
-            <input type="text" name="talla" placeholder="Talla" required>
+            <input type="text" name="marca" placeholder="Marca" required>
+            <input type="text" name="modelo" placeholder="modelo" required>
             <select name="categoria">
                 <option value="">Seleccionar categoría</option>
                 <?php while($fila2 = $categorias->fetch_assoc()){ ?>
                     <option value="<?php echo $fila2['id']; ?>"><?php echo $fila2['nombre']; ?></option> 
                 <?php } ?>
             </select>
-            <input type="file" name="imagen" accept="image/*">
+            <select name="tipo">
+                <option value="">Seleccionar tipo</option>
+                <?php while($fila3 = $tipos->fetch_assoc()){ ?>
+                    <option value="<?php echo $fila3['id']; ?>"><?php echo $fila3['nombre']; ?></option> 
+                <?php } ?>
+            </select>
+            <input type="text" name="especificaciones" placeholder="especificaciones" required>
+            <input type="number" name="precio" placeholder="precio" required>
+            <input type="file"  multiple name="imagen[]" accept="image/*">
             <button type="submit">Guardar Producto</button>
             </form>
             <table>
             <thead>
                 <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Categoría</th>
+                <th>Id</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Tipo</th>
+                <th>especificaciones</th>
                 <th>Precio</th>
-                <th>Talla</th>
-                <th>Acciones</th>
+                <th>Categoria</th>
                 </tr>
             </thead>
             <?php
@@ -58,10 +65,12 @@ if($_SESSION['rol'] == "admin"){
                     <tbody>
                     <tr>
                         <td><?php echo $fila['id']; ?></td>
-                        <td><?php echo $fila['nombre']; ?></td>
+                        <td><?php echo $fila['marca']; ?></td>
+                        <td><?php echo $fila['modelo']; ?></td>
+                        <td><?php echo $fila['nombreTipo']; ?></td>
+                        <td><?php echo $fila['especificaciones']; ?></td>
+                        <td><?php echo $fila['precio']; ?></td>
                         <td><?php echo $fila['nombreCategoria']; ?></td>
-                        <td>$<?php echo $fila['precio']; ?></td>
-                        <td><?php echo $fila['descripcion']; ?></td>
                         <td>
                         <a href="index.php?accion=mostrarProducto&id=<?php echo $fila['id']; ?>"><button>Editar</button></a>
                         <button onclick="eliminarProducto('<?php echo $fila['id']; ?>')">Eliminar</button>

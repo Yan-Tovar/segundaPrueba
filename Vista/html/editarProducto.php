@@ -22,7 +22,7 @@
                 <input type="number" name="talla" value="<?php echo $fila['talla']; ?>" required placeholder="talla">
                 <input type="text" name="descripcion" value="<?php echo $fila['descripcion']; ?>" required placeholder="descripcion">
                 <input type="number" name="precio" value="<?php echo $fila['precio']; ?>" required placeholder="precio">
-                <input type="file" name="imagen" accept="image/*">
+                <input type="file" multiple name="imagen[]" accept="image/*">
                 <select name="categoria">
                     <option value="<?php echo $fila['id_categoria']; ?>"><?php echo $fila['nombreCategoria']; ?></option> 
                     <?php while($fila2 = $categorias->fetch_assoc()){ ?>

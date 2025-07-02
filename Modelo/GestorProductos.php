@@ -3,7 +3,8 @@ class GestorProductos{
     public function consultarProductos(){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "SELECT productos.*, categorias.nombre AS nombreCategoria FROM productos
+        $sql = "SELECT productos.*, categorias.nombre AS nombreCategoria, tipo.nombre AS nombreTipo  FROM productos
+        JOIN tipo ON productos.tipo = tipo.id
         JOIN categorias ON productos.id_categoria = categorias.id";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
@@ -45,6 +46,15 @@ class GestorProductos{
         $conexion = new Conexion();
         $conexion->abrir();
         $sql = "SELECT * FROM categorias";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+    public function consultarTipos(){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT * FROM tipo";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
         $conexion->cerrar();
@@ -149,18 +159,32 @@ class GestorProductos{
     public function agregarProducto(Producto $producto ){
         $conexion = new Conexion();
         $conexion->abrir();
-        $nombre = $producto->obtenerNombre();
-        $descripcion = $producto->obtenerDescripcion();
+        $marca = $producto->obtenerMarca();
+        $modelo = $producto->obtenerModelo();
+        $tipo = $producto->obtenerTipo();
+        $especificaciones = $producto->obtenerEspecificaciones();
         $precio = $producto->obtenerPrecio();
-        $talla = $producto->obtenerTalla();
-        $imagen = $producto->obtenerImagen();
         $categoria = $producto->obtenerCategoria();
-        $sql = "INSERT INTO productos VALUES(null, '$nombre', '$descripcion', '$precio', '$imagen', '$categoria', '$talla')";
+        $sql = "INSERT INTO productos VALUES(null, '$marca', '$modelo', '$tipo', '$especificaciones', '$precio', '$categoria')";
         $conexion->consulta($sql);
-        $result = $conexion->obtenerFilasAfectadas();
+        $result = $conexion->obtenerId();
         $conexion->cerrar();
         return $result;
     }
+    public function agregarImagenes(array $imagenes) {
+    $conexion = new Conexion();
+    $conexion->abrir();
+    $resultados = 0;
+    foreach ($imagenes as $imagen) {
+        $nombre = $imagen->obtenerNombre();
+        $idProducto = $imagen->obtenerIdProducto;
+        $sql = "INSERT INTO imagenes VALUES (null, '$nombre', '$idProducto')";
+        $conexion->consulta($sql);
+        $resultados += $conexion->obtenerFilasAfectadas();
+    }
+    $conexion->cerrar();
+    return $resultados;
+}
     public function agregarCategoria(Categoria $categoria ){
         $conexion = new Conexion();
         $conexion->abrir();
