@@ -87,37 +87,42 @@ if(isset($_GET['accion'])){
     }elseif($_GET['accion'] == "editarCategoria"){
         $controlador->editarCategoria($_POST['id'], $_POST['nombre']);
     }elseif ($_GET['accion'] == "agregarProducto") {
-        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-            $carpetaDestino = "imagenes/";
-            $nombreOriginal = $_FILES['imagen']['name'];
-            $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-            $nombreAleatorio = uniqid() . '.' . strtolower($extension);
-            $rutaFinal = $carpetaDestino . $nombreAleatorio;
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaFinal)) {
-                $controlador->agregarProducto(
-                    $_POST['marca'],
-                    $_POST['modelo'],
-                    $_POST['tipo'],
-                    $_POST['especificaciones'],
-                     $_POST['precio'],
-                    $nombreAleatorio,
-                    $_POST['categoria']
-                );
-            } else {
-                echo "Error al subir la imagen";
-                $controlador->verPanelA();
+    if (isset($_FILES['imagen'])) {
+        $nombresAleatorios = [];
+        foreach ($_FILES['imagen']['tmp_name'] as $index => $tmpName) {
+            if ($_FILES['imagen']['error'][$index] === UPLOAD_ERR_OK) {
+                $nombreOriginal = $_FILES['imagen']['name'][$index];
+                $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+                $nombreAleatorio = uniqid() . '.' . strtolower($extension);
+                $rutaFinal = "imagenes/" . $nombreAleatorio;
+
+                if (move_uploaded_file($tmpName, $rutaFinal)) {
+                    $nombresAleatorios[] = $nombreAleatorio;
+                }
             }
-        } else {
-            $controlador->agregarProducto(
-                $_POST['marca'],
-                $_POST['modelo'],
-                $_POST['tipo'],
-                $_POST['especificaciones'],
-                $_POST['precio'],
-                null,
-                $_POST['categoria']
-            );
         }
+
+        $controlador->agregarProducto(
+            $_POST['marca'],
+            $_POST['modelo'],
+            $_POST['tipo'],
+            $_POST['especificaciones'],
+            $_POST['precio'],
+            $nombresAleatorios,
+            $_POST['categoria']
+        );
+    } else {
+        // No se subió ninguna imagen
+        $controlador->agregarProducto(
+            $_POST['marca'],
+            $_POST['modelo'],
+            $_POST['tipo'],
+            $_POST['especificaciones'],
+            $_POST['precio'],
+            [], // envía array vacío en lugar de null
+            $_POST['categoria']
+        );
+    }
     }elseif($_GET['accion'] == "eliminarProducto"){
         $controlador->eliminarProducto($_GET['id']);
     }elseif($_GET['accion'] == "eliminarCategoria"){

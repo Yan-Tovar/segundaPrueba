@@ -131,20 +131,30 @@ class Controlador{
             require_once "Vista/html/loginUsuario.php";
         }
     }
-    public function agregarProducto($marca, $modelo, $tipo, $especificaciones, $precio, $imagenes, $categoria){
-        $producto = new Producto($marca, $modelo, $tipo, $especificaciones,  $precio, $categoria);
-        $gestor = new GestorProductos();
-        $id = $gestor->agregarProducto($producto);
-        $imagenesObj = [];
+   public function agregarProducto($marca, $modelo, $tipo, $especificaciones, $precio, $imagenes, $categoria) {
+    $producto = new Producto($marca, $modelo, $tipo, $especificaciones, $precio, $categoria);
+    $gestor = new GestorProductos();
+    $id = $gestor->agregarProducto($producto);
+
+    $imagenesObj = [];
+
+    // Verificamos que $imagenes sea un array y no esté vacío
+    if (is_array($imagenes) && !empty($imagenes)) {
         foreach ($imagenes as $nombreImagen) {
             $rutaImagen = "imagenes/" . $nombreImagen;
             $imagenesObj[] = new Imagen($rutaImagen, $id);
-            $resultadoImg = $gestor->agregarImagenes($imagenesObj);
         }
-        echo "<script>alert('El producto se agregó correctamente')</script>";
-        $productos = $gestor->consultarProductos();
-        $categorias = $gestor->consultarCategorias();
-        require_once "Vista/html/verProductos.php";
+
+        // Llamamos agregarImagenes solo una vez con todas las imágenes
+        $resultadoImg = $gestor->agregarImagenes($imagenesObj);
+    }
+
+    echo "<script>alert('El producto se agregó correctamente')</script>";
+
+    // Redirigir o cargar la vista de productos
+    $productos = $gestor->consultarProductos();
+    $categorias = $gestor->consultarCategorias();
+    require_once "Vista/html/verProductos.php";
     }
     public function agregarCategoria($nombre){
         $categoria = new Categoria($nombre);
