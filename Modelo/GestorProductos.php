@@ -25,7 +25,7 @@ class GestorProductos{
     public function consultarPedidos(){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "SELECT pedidos.*, usuarios.nombre AS cliente, productos.nombre AS producto FROM pedidos
+        $sql = "SELECT pedidos.*, usuarios.nombre AS cliente, productos.modelo AS producto FROM pedidos
         JOIN usuarios ON pedidos.id_usuario = usuarios.id
         JOIN productos ON pedidos.id_producto = productos.id";
         $conexion->consulta($sql);
@@ -172,19 +172,20 @@ class GestorProductos{
         return $result;
     }
     public function agregarImagenes(array $imagenes) {
-    $conexion = new Conexion();
-    $conexion->abrir();
-    $resultados = 0;
-    foreach ($imagenes as $imagen) {
-        $nombre = $imagen->obtenerNombre();
-        $idProducto = $imagen->obtenerIdProducto;
-        $sql = "INSERT INTO imagenes VALUES (null, '$nombre', '$idProducto')";
-        $conexion->consulta($sql);
-        $resultados += $conexion->obtenerFilasAfectadas();
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $resultados = 0;
+        foreach ($imagenes as $imagen) {
+            $nombre = $imagen->obtenerNombre();
+            $idProducto = $imagen->obtenerIdProducto();
+            $idProducto = intval($idProducto);
+            $sql = "INSERT INTO imagenes VALUES (null, '$nombre', $idProducto)";
+            $conexion->consulta($sql);
+            $resultados += $conexion->obtenerFilasAfectadas();
+        }
+        $conexion->cerrar();
+        return $resultados;
     }
-    $conexion->cerrar();
-    return $resultados;
-}
     public function agregarCategoria(Categoria $categoria ){
         $conexion = new Conexion();
         $conexion->abrir();
