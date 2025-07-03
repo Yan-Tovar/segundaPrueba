@@ -6,7 +6,7 @@ class Conexion{
     private $filasAfectadas;
     private $id;
     public function abrir(){
-        $this->mySQLI = new mysqli("localhost", "root", "", "tienda_tenis");
+        $this->mySQLI = new mysqli("localhost", "root", "", "tienda_computadores");
         if($this->mySQLI->connect_error){
                 die("Fallo la conexion".$this->mySQLI->connect_error);
         }

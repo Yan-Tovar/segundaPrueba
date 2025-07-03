@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-07-2025 a las 03:31:35
--- Versión del servidor: 10.4.32-MariaDB
+-- Tiempo de generación: 02-07-2025 a las 22:07:34
+-- Versión del servidor: 10.4.32-MariaDB 
 -- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,10 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `tienda_tenis`
+-- Base de datos: `tienda_computadores`
 --
-CREATE DATABASE IF NOT EXISTS `tienda_tenis` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `tienda_tenis`;
 
 -- --------------------------------------------------------
 
@@ -39,10 +37,21 @@ CREATE TABLE `categorias` (
 --
 
 INSERT INTO `categorias` (`id`, `nombre`) VALUES
-(1, 'Tennis Niños'),
-(2, 'Moda Juvenil'),
-(4, 'Tenis Mujer'),
-(5, 'Tenis Deportivos');
+(6, 'Portatiles'),
+(7, 'Computadores de escritorio'),
+(8, 'Respuestos');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `imagenes`
+--
+
+CREATE TABLE `imagenes` (
+  `id` int(10) NOT NULL,
+  `nombre` varchar(200) NOT NULL,
+  `id_producto` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -56,16 +65,8 @@ CREATE TABLE `pedidos` (
   `id_producto` int(11) DEFAULT NULL,
   `cantidad` int(11) NOT NULL,
   `fecha` datetime DEFAULT current_timestamp(),
-  `estado` varchar(50) NOT NULL
+  `estado` enum('Pendiente','Enviado','Entregado','Cancelado') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `pedidos`
---
-
-INSERT INTO `pedidos` (`id`, `id_usuario`, `id_producto`, `cantidad`, `fecha`, `estado`) VALUES
-(4, 3, 1, 1, '2025-06-27 00:00:00', 'Solicitado'),
-(5, 6, 1, 1, '2025-07-01 00:00:00', 'Solicitado');
 
 -- --------------------------------------------------------
 
@@ -75,26 +76,24 @@ INSERT INTO `pedidos` (`id`, `id_usuario`, `id_producto`, `cantidad`, `fecha`, `
 
 CREATE TABLE `productos` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL,
+  `marca` varchar(100) NOT NULL,
+  `modelo` varchar(50) NOT NULL,
+  `tipo` int(11) NOT NULL,
+  `especifiaciones` text NOT NULL,
   `precio` decimal(10,2) NOT NULL,
-  `imagen` varchar(255) DEFAULT NULL,
-  `id_categoria` int(11) DEFAULT NULL,
-  `talla` varchar(5) NOT NULL
+  `id_categoria` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Volcado de datos para la tabla `productos`
+-- Estructura de tabla para la tabla `tipo`
 --
 
-INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `precio`, `imagen`, `id_categoria`, `talla`) VALUES
-(1, 'Tenis para Niño', 'Color Azul', 151000.00, '68633a44c3e4e.jpg', 1, '32'),
-(4, 'Tenis Adulto', 'Color Rojo deportivos', 190000.00, '6863371e0ff69.webp', 2, '40'),
-(5, 'Tenis Femeninos', 'Tenis color rosado Femenino', 180000.00, '6863375c49935.webp', 4, '38'),
-(6, 'Tennis Deportivos ', 'Color blancos. Para cualquier persona', 80000.00, '686337e900c4d.jpg', 5, '39'),
-(7, 'SoccerShoe', 'Tenis deportivo color amarillo', 85000.00, '6863387d004a9.jpg', 5, '40'),
-(8, 'New Balance 530 Sneakers', 'Color blanco', 230000.00, '6863396dbfebb.jpg', 2, '40'),
-(9, 'Tacones', 'Color Crema', 15000.00, '686339d4747d0.jpg', 2, '38');
+CREATE TABLE `tipo` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -130,6 +129,13 @@ ALTER TABLE `categorias`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `imagenes`
+--
+ALTER TABLE `imagenes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_producto` (`id_producto`);
+
+--
 -- Indices de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
@@ -142,7 +148,14 @@ ALTER TABLE `pedidos`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_categoria` (`id_categoria`);
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `tipo` (`tipo`);
+
+--
+-- Indices de la tabla `tipo`
+--
+ALTER TABLE `tipo`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -159,7 +172,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `imagenes`
+--
+ALTER TABLE `imagenes`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
@@ -174,6 +193,12 @@ ALTER TABLE `productos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT de la tabla `tipo`
+--
+ALTER TABLE `tipo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -182,6 +207,12 @@ ALTER TABLE `usuarios`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `imagenes`
+--
+ALTER TABLE `imagenes`
+  ADD CONSTRAINT `imagenes_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`);
 
 --
 -- Filtros para la tabla `pedidos`
@@ -194,7 +225,7 @@ ALTER TABLE `pedidos`
 -- Filtros para la tabla `productos`
 --
 ALTER TABLE `productos`
-  ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`tipo`) REFERENCES `tipo` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

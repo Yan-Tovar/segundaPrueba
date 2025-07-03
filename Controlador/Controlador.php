@@ -35,6 +35,7 @@ class Controlador{
         $gestor = new GestorProductos();
         $productos = $gestor->consultarProductos();
         $categorias = $gestor->consultarCategorias();
+        $tipos = $gestor->consultarTipos();
         require_once "Vista/html/verProductos.php";
     }
     public function verCategorias(){
@@ -130,10 +131,16 @@ class Controlador{
             require_once "Vista/html/loginUsuario.php";
         }
     }
-    public function agregarProducto($nombre, $descripcion, $precio, $talla, $imagen, $categoria){
-        $producto = new Producto($nombre, $descripcion, $precio, $talla, $imagen, $categoria);
+    public function agregarProducto($marca, $modelo, $tipo, $especificaciones, $precio, $imagenes, $categoria){
+        $producto = new Producto($marca, $modelo, $tipo, $especificaciones,  $precio, $categoria);
         $gestor = new GestorProductos();
-        $result = $gestor->agregarProducto($producto);
+        $id = $gestor->agregarProducto($producto);
+        $imagenesObj = [];
+        foreach ($imagenes as $nombreImagen) {
+            $rutaImagen = "imagenes/" . $nombreImagen;
+            $imagenesObj[] = new Imagen($rutaImagen, $id);
+            $resultadoImg = $gestor->agregarImagenes($imagenesObj);
+        }
         echo "<script>alert('El producto se agregó correctamente')</script>";
         $productos = $gestor->consultarProductos();
         $categorias = $gestor->consultarCategorias();

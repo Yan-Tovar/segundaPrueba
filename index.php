@@ -8,6 +8,7 @@ require_once "Modelo/Usuario.php";
 require_once "Modelo/Producto.php";
 require_once "Modelo/Pedido.php";
 require_once "Modelo/Categoria.php";
+require_once "Modelo/Imagen.php";
 $controlador = new Controlador();
 
 if(isset($_GET['accion'])){
@@ -38,38 +39,51 @@ if(isset($_GET['accion'])){
         $controlador->registrarUsuario($_POST['nombre'], $_POST['correo'], $_POST['contrasena']);
     }elseif($_GET['accion'] == "mostrarProducto"){
         $controlador->mostrarProducto($_GET['id']);
-    }elseif($_GET['accion'] == "editarProducto"){
-        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-            $carpetaDestino = "imagenes/";
-            $nombreOriginal = $_FILES['imagen']['name'];
-            $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-            $nombreAleatorio = uniqid() . '.' . strtolower($extension);
-            $rutaFinal = $carpetaDestino . $nombreAleatorio;
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaFinal)) {
-                $controlador->editarProducto(
-                    $_POST['id'],
-                    $_POST['nombre'],
-                    $_POST['descripcion'],
-                    $_POST['precio'],
-                    $_POST['talla'],
-                    $nombreAleatorio,
-                    $_POST['categoria']
-                );
-            } else {
-                echo "Error al subir la imagen";
-                $controlador->verPanelA();
+    }elseif ($_GET['accion'] == "editarProducto") {
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'][0] == 0) {
+        $carpetaDestino = "imagenes/";
+        $imagenesSubidas = [];
+        for ($i = 0; $i < count($_FILES['imagen']['name']); $i++) {
+            if ($_FILES['imagen']['error'][$i] == 0) {
+                $nombreOriginal = $_FILES['imagen']['name'][$i];
+                $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+                $nombreAleatorio = uniqid() . '.' . strtolower($extension);
+                $rutaFinal = $carpetaDestino . $nombreAleatorio;
+                if (move_uploaded_file($_FILES['imagen']['tmp_name'][$i], $rutaFinal)) {
+                    $imagenesSubidas[] = $nombreAleatorio;
+                } else {
+                    echo "Error al subir la imagen " . $nombreOriginal;
+                    $controlador->verPanelA();
+                    exit;
+                }
             }
-        } else {
+        }
+        if (!empty($imagenesSubidas)) {
             $controlador->editarProducto(
                 $_POST['id'],
                 $_POST['nombre'],
                 $_POST['descripcion'],
                 $_POST['precio'],
                 $_POST['talla'],
-                null,
+                implode(",", $imagenesSubidas),
                 $_POST['categoria']
             );
+        } else {
+            echo "No se subieron imágenes.";
+            $controlador->verPanelA();
         }
+    } else {
+        // Si no se subieron imágenes, solo actualizamos sin imagen
+        $controlador->editarProducto(
+            $_POST['id'],
+            $_POST['nombre'],
+            $_POST['descripcion'],
+            $_POST['precio'],
+            $_POST['talla'],
+            null,
+            $_POST['categoria']
+        );
+    }
     }elseif($_GET['accion'] == "editarCategoria"){
         $controlador->editarCategoria($_POST['id'], $_POST['nombre']);
     }elseif ($_GET['accion'] == "agregarProducto") {
@@ -81,10 +95,11 @@ if(isset($_GET['accion'])){
             $rutaFinal = $carpetaDestino . $nombreAleatorio;
             if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaFinal)) {
                 $controlador->agregarProducto(
-                    $_POST['nombre'],
-                    $_POST['descripcion'],
-                    $_POST['precio'],
-                    $_POST['talla'],
+                    $_POST['marca'],
+                    $_POST['modelo'],
+                    $_POST['tipo'],
+                    $_POST['especificaciones'],
+                     $_POST['precio'],
                     $nombreAleatorio,
                     $_POST['categoria']
                 );
@@ -94,10 +109,11 @@ if(isset($_GET['accion'])){
             }
         } else {
             $controlador->agregarProducto(
-                $_POST['nombre'],
-                $_POST['descripcion'],
+                $_POST['marca'],
+                $_POST['modelo'],
+                $_POST['tipo'],
+                $_POST['especificaciones'],
                 $_POST['precio'],
-                $_POST['talla'],
                 null,
                 $_POST['categoria']
             );
