@@ -20,6 +20,7 @@
     </header>
     <!-- Listado de productos -->
     <section id="catalogo">
+
         <h2>Catálogo de Productos</h2>
         <form action="index.php?accion=filtrarCategoria" method="POST">
             Filtrar por:
@@ -33,17 +34,22 @@
         </form>
         <div class="productos">
     <?php
+
     if(isset($result) && $result->num_rows > 0) {
             while($fila = $result->fetch_assoc()){
     ?>
             <!-- Aquí se llenan los productos dinámicamente -->
             <div class="producto">
-                <?php if($fila['imagen'] == null){ ?><img src="imagenes/sinImagen.jpg" alt="Sin Imagen" class="imgProducto">
-                    <?php }else{ ?><img src="imagenes/<?php echo $fila['imagen']; ?>" alt="Tenis Ejemplo" class="imgProducto"><?php }?>
-                <h3><?php echo $fila['nombre']; ?></h3>
+                <?php if($fila['imagen'] == null){ ?>
+                    <img src="imagenes/sinImagen.jpg" alt="Sin Imagen" class="imgProducto">
+                <?php }else{ ?>
+                    <img src="imagenes/<?php echo $fila['imagen']; ?>" alt="Tenis Ejemplo" class="imgProducto">
+                <?php }?>
+
                 <p>Categoría: <?php echo $fila['nombreCategoria']; ?></p>
-                <p>Talla: <?php echo $fila['talla']; ?></p>
-                <p>Descripción: <?php echo $fila['descripcion']; ?></p>
+                <p>Marca: <?php echo $fila['marca']; ?></p>
+                <p>Modelo: <?php echo $fila['modelo']; ?></p>
+                <p>Especificaciones: <?php echo $fila['especificaciones']; ?></p>
                 <p>$<?php echo $fila['precio']; ?></p>
                 <form class="none" action="index.php?accion=solicitarProducto" method="POST">
                     <input type="hidden" name="id" value="<?php echo $fila['id']; ?>">
