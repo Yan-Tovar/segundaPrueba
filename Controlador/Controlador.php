@@ -19,6 +19,8 @@ class Controlador{
         $gestor = new GestorProductos();
         $producto = $gestor->consultarProductosPorId($id);
         $categorias = $gestor->consultarCategorias();
+        $tipos = $gestor->consultarTipos();
+        $imagenes = $gestor->consultarImagenes($id);
         require_once "Vista/html/editarProducto.php";
     }
     public function mostrarCategoria($id){
@@ -43,26 +45,19 @@ class Controlador{
         $categorias = $gestor->consultarCategorias();
         require_once "Vista/html/verCategorias.php";
     }
-    public function editarProducto($id, $nombre, $descripcion, $precio, $talla, $imagen, $categoria){
+    public function editarProducto($id, $marca, $modelo, $tipo, $especificaciones, $precio, $categoria){
         $gestor = new GestorProductos();
-        if($imagen != null){
-            $imagenA = $gestor->consultarImagen($id);
-            $imagePath = 'imagenes/' . $imagenA['imagen'];
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
-            $result = $gestor->editarProducto($id, $nombre, $descripcion, $precio, $imagen, $categoria);
-        }else{
-            $result = $gestor->editarProducto($id, $nombre, $descripcion, $precio, $imagen, $categoria);
-        }
+        $result = $gestor->editarProducto($id, $marca, $modelo, $tipo, $especificaciones, $precio, $categoria);
         if($result > 0){
             $productos = $gestor->consultarProductos();
             $categorias = $gestor->consultarCategorias();
+            $tipos = $gestor->consultarTipos();
             require_once "Vista/html/verProductos.php";
         }else{
             echo "<script>alert('No se pudo editar el producto :(')</script>";
             $productos = $gestor->consultarProductos();
             $categorias = $gestor->consultarCategorias();
+            $tipos = $gestor->consultarTipos();
             require_once "Vista/html/verProductos.php";
         } 
     }
@@ -135,25 +130,33 @@ class Controlador{
     $producto = new Producto($marca, $modelo, $tipo, $especificaciones, $precio, $categoria);
     $gestor = new GestorProductos();
     $id = $gestor->agregarProducto($producto);
-
     $imagenesObj = [];
-
-    // Verificamos que $imagenes sea un array y no esté vacío
     if (is_array($imagenes) && !empty($imagenes)) {
         foreach ($imagenes as $nombreImagen) {
             $rutaImagen = "imagenes/" . $nombreImagen;
             $imagenesObj[] = new Imagen($rutaImagen, $id);
         }
-
-        // Llamamos agregarImagenes solo una vez con todas las imágenes
         $resultadoImg = $gestor->agregarImagenes($imagenesObj);
     }
-
     echo "<script>alert('El producto se agregó correctamente')</script>";
-
-    // Redirigir o cargar la vista de productos
     $productos = $gestor->consultarProductos();
     $categorias = $gestor->consultarCategorias();
+    require_once "Vista/html/verProductos.php";
+    }
+    public function agregarImagenes($imagenes, $idP) {
+    $gestor = new GestorProductos();
+    $imagenesObj = [];
+    if (is_array($imagenes) && !empty($imagenes)) {
+        foreach ($imagenes as $nombreImagen) {
+            $rutaImagen = "imagenes/" . $nombreImagen;
+            $imagenesObj[] = new Imagen($rutaImagen, $idP);
+        }
+        $resultadoImg = $gestor->agregarImagenes($imagenesObj);
+    }
+    echo "<script>alert('se agregó correctamente')</script>";
+    $productos = $gestor->consultarProductos();
+    $categorias = $gestor->consultarCategorias();
+    $tipos = $gestor->consultarTipos();
     require_once "Vista/html/verProductos.php";
     }
     public function agregarCategoria($nombre){
@@ -166,11 +169,6 @@ class Controlador{
     }
     public function eliminarProducto($id){
         $gestor = new GestorProductos();
-        $imagen = $gestor->consultarImagen($id);
-        $imagePath = 'imagenes/' . $imagen['imagen'];
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
-        }
         $result = $gestor->eliminarProductoPorId($id);
         echo "<script>alert('El producto se eliminó correctamente')</script>";
         $productos = $gestor->consultarProductos();
@@ -198,6 +196,20 @@ class Controlador{
             require_once "Vista/html/verCategorias.php";
         }
         
+    }
+    public function eliminarImagen($id){
+        $gestor = new GestorProductos();
+        $imagenA = $gestor->consultarImagen($id);
+        $imagePath = $imagenA['nombre'];
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+        $imagenA = $gestor->eliminarImagen($id);
+        echo "<script>alert('Se eliminó la imagen con Exito')</script>";
+        $productos = $gestor->consultarProductos();
+        $categorias = $gestor->consultarCategorias();
+        $tipos = $gestor->consultarTipos();
+        require_once "Vista/html/verProductos.php";
     }
 }
 ?>

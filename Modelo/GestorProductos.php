@@ -3,9 +3,16 @@ class GestorProductos{
     public function consultarProductos(){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "SELECT productos.*, categorias.nombre AS nombreCategoria, tipo.nombre AS nombreTipo  FROM productos
-        JOIN tipo ON productos.tipo = tipo.id
-        JOIN categorias ON productos.id_categoria = categorias.id";
+        $sql = "SELECT  productos.*,
+                        categorias.nombre AS nombreCategoria,
+                        tipo.nombre AS nombreTipo,
+                        GROUP_CONCAT(imagenes.nombre) AS imagenesProducto
+                    FROM productos
+                    JOIN tipo ON productos.tipo = tipo.id
+                    JOIN categorias ON productos.id_categoria = categorias.id
+                    LEFT JOIN imagenes ON productos.id = imagenes.id_producto
+                    GROUP BY productos.id;
+                    ";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
         $conexion->cerrar();
@@ -42,6 +49,15 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
+    public function consultarImagenes($id){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT * FROM imagenes WHERE id_producto = '$id'";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
     public function consultarCategorias(){
         $conexion = new Conexion();
         $conexion->abrir();
@@ -63,7 +79,8 @@ class GestorProductos{
     public function consultarProductosPorId($id){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "SELECT productos.*, categorias.nombre AS nombreCategoria FROM productos
+        $sql = "SELECT productos.*, categorias.nombre AS nombreCategoria, tipo.nombre AS nombreTipo FROM productos
+        JOIN tipo ON productos.tipo = tipo.id
         JOIN categorias ON productos.id_categoria = categorias.id WHERE productos.id = '$id'";
         $conexion->consulta($sql);
         $producto = $conexion->obtenerResultado();
@@ -82,11 +99,20 @@ class GestorProductos{
     public function consultarImagen($id){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "SELECT imagen FROM productos WHERE id = '$id'";
+        $sql = "SELECT nombre FROM imagenes WHERE id = '$id'";
         $conexion->consulta($sql);
-        $producto = $conexion->obtenerUnaFila();
+        $result = $conexion->obtenerUnaFila();
         $conexion->cerrar();
-        return $producto;
+        return $result;
+    }
+    public function eliminarImagen($id){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "DELETE FROM imagenes WHERE id = '$id'";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerFilasAfectadas();
+        $conexion->cerrar();
+        return $result;
     }
     public function aniadirPedido(){
         $conexion = new Conexion();
@@ -111,10 +137,11 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
-    public function editarProducto($id, $nombre, $descripcion, $precio, $imagen, $categoria){
+    public function editarProducto($id, $marca, $modelo, $tipo, $especificaciones, $precio, $categoria){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "UPDATE productos SET nombre = '$nombre', descripcion = '$descripcion', precio= '$precio', imagen= '$imagen', id_categoria= '$categoria' WHERE id = '$id'";
+        $sql = "UPDATE productos SET marca = '$marca', modelo = '$modelo', tipo= '$tipo', especificaciones= '$especificaciones', precio= '$precio', id_categoria= '$categoria'
+        WHERE id = '$id'";
         $conexion->consulta($sql);
         $result = $conexion->obtenerFilasAfectadas();
         $conexion->cerrar();

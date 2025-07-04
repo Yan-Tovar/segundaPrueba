@@ -16,7 +16,7 @@ if($_SESSION['rol'] == "admin"){
         <h1>Tienda de Tenis</h1>
         <nav>
             <a href="index.php?accion=verPanelA">Inicio</a>
-            <a href="index.php?accion=verProductos">Producutos</a>
+            <a href="index.php?accion=verProductos">Productos</a>
             <a href="index.php?accion=verCategorias">Categorias</a>
             <a href="index.php?accion=cerrarSesion">Cerrar Sesion</a>
         </nav>
