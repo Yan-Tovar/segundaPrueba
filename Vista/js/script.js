@@ -8,3 +8,8 @@ function eliminarCategoria(id){
         window.location.href = `index.php?accion=eliminarCategoria&id=${id}`;
     }
 }
+function eliminarImagen(id){
+    if (confirm("¿Está seguro de eliminar esta Imagen?")) {
+        window.location.href = `index.php?accion=eliminarImagen&id=${id}`;
+    }
+}
