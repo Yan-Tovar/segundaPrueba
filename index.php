@@ -31,6 +31,8 @@ if(isset($_GET['accion'])){
         $controlador->verPagina("Vista/html/loginUsuario.php");
     }elseif($_GET['accion'] == "verPanelA"){
         $controlador->verPanelA();
+    }elseif($_GET['accion'] == "verEstadisticas"){
+        $controlador->verEstadisticas();
     }elseif($_GET['accion'] == "verProductos"){
         $controlador->verProductos();
     }elseif($_GET['accion'] == "verCategorias"){
@@ -118,8 +120,8 @@ if(isset($_GET['accion'])){
         }
     }elseif($_GET['accion'] == "mostrarCategoria"){
         $controlador->mostrarCategoria( $_GET['id']);
-    }elseif($_GET['accion'] == "completarPedido"){
-        $controlador->completarPedido( $_GET['id']);
+    }elseif($_GET['accion'] == "cambiarEstadoPedido"){
+        $controlador->cambiarEstadoPedido( $_POST['id'], $_POST['estado']);
     }elseif($_GET['accion'] == "cerrarSesion"){
         session_unset();
         session_destroy();

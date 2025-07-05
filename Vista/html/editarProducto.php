@@ -1,3 +1,6 @@
+<?php
+if($_SESSION['rol'] == "admin"){
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,15 +65,14 @@
         }
     }else{
             echo "<div class='producto'><h3>Ocurrió un error en la busqueda</h3></div>";
-            echo "<a href='index.php?accion=verPanelA'><button>Ir al Panel</button></a>";
     }
     ?>
     </section>
     <hr>
     <h1>Imagenes</h1>
     <?php
-    if(isset($imagenes) && $imagenes->num_rows > 0) {
-            while($fila3 = $imagenes->fetch_assoc()){
+    if (!empty($imagenes)) {
+    foreach ($imagenes as $fila3) {
     ?>
             <!-- Aquí se llenan los datos de la imagen dinámicamente -->
             <div class="card" style="width: 18rem;">
@@ -89,3 +91,9 @@
     ?>
 </body>
 </html>
+<?php
+}else{
+  echo "<script>alert('You can´t open this file');</script>";
+  header('location:index.php');
+}
+?>

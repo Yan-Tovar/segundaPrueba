@@ -76,6 +76,45 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
+    public function ventasPorTipo(){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT 
+            p.id_producto,
+            productos.marca AS nombre_producto,
+            t.nombre AS tipo_nombre,
+            SUM(p.cantidad) AS total_cantidad_pedida
+        FROM pedidos p
+        JOIN productos ON p.id_producto = productos.id
+        JOIN tipo t ON productos.tipo = t.id
+        GROUP BY p.id_producto, productos.marca, t.nombre
+        ORDER BY total_cantidad_pedida DESC;
+        ";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+    public function productosPorCategoria(){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT count(productos.id) AS cantidad, categorias.nombre AS categoria_nombre FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id
+        GROUP BY productos.id_categoria";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+        public function clientesRegistrados(){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT count(*) AS cantidad, rol FROM usuarios GROUP BY rol";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
     public function consultarProductosPorId($id){
         $conexion = new Conexion();
         $conexion->abrir();
@@ -156,10 +195,10 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
-    public function completarPedido($id){
+    public function cambiarEstadoP($id, $estado){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "UPDATE pedidos SET estado = 'Completado' WHERE id = '$id'";
+        $sql = "UPDATE pedidos SET estado = '$estado' WHERE id = '$id'";
         $conexion->consulta($sql);
         $result = $conexion->obtenerFilasAfectadas();
         $conexion->cerrar();
