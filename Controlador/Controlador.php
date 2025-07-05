@@ -33,6 +33,13 @@ class Controlador{
         $pedidos = $gestor->consultarPedidos();
         require_once "Vista/html/panelAdministrador.php";
     }
+    public function verEstadisticas(){
+        $gestor = new GestorProductos();
+        $ventasTipo = $gestor->ventasPorTipo();
+        $productosCategoria = $gestor->productosPorCategoria();
+        $clientesRegistrados = $gestor->ClientesRegistrados();
+        require_once "Vista/html/estadisticas.php";
+    }
     public function verProductos(){
         $gestor = new GestorProductos();
         $productos = $gestor->consultarProductos();
@@ -175,10 +182,10 @@ class Controlador{
         $categorias = $gestor->consultarCategorias();
         require_once "Vista/html/verProductos.php";
     }
-    public function completarPedido($id){
+    public function cambiarEstadoPedido($id, $estado){
         $gestor = new GestorProductos();
-        $result = $gestor->completarPedido($id);
-        echo "<script>alert('El pedido se completó correctamente correctamente')</script>";
+        $result = $gestor->cambiarEstadoP($id, $estado);
+        echo "<script>alert('El pedido se actualizó correctamente correctamente')</script>";
         $pedidos = $gestor->consultarPedidos();
         require_once "Vista/html/panelAdministrador.php";
     }

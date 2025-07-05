@@ -18,6 +18,7 @@ if($_SESSION['rol'] == "admin"){
             <a href="index.php?accion=verPanelA">Inicio</a>
             <a href="index.php?accion=verProductos">Productos</a>
             <a href="index.php?accion=verCategorias">Categorias</a>
+            <a href="index.php?accion=verEstadisticas">Estadisticas</a>
             <a href="index.php?accion=cerrarSesion">Cerrar Sesion</a>
         </nav>
     </header>

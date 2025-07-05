@@ -16,3 +16,4 @@ form select { margin-bottom: 1rem; padding: 0.5rem; font-size: 1rem; }
 footer { background-color: #333; color: white; text-align: center; padding: 1rem; margin-top: 2rem; }
 .none{position: relative; margin: 0 auto;}
 .centrado{display: flex;align-items: center;justify-content: center;}
+.grafico{max-width: 90vw;max-height: auto;margin: 5vw;}

@@ -13,8 +13,9 @@
         <h1>Tienda de Tenis</h1>
         <nav>
             <a href="index.php?accion=verPanelA">Inicio</a>
-            <a href="index.php?accion=verProductos">Producutos</a>
+            <a href="index.php?accion=verProductos">Productos</a>
             <a href="index.php?accion=verCategorias">Categorias</a>
+            <a href="index.php?accion=verEstadisticas">Estadisticas</a>
             <a href="index.php?accion=cerrarSesion">Cerrar Sesion</a>
         </nav>
     </header>
@@ -44,14 +45,19 @@
                         <td><?php echo $fila['producto']; ?></td>
                         <td><?php echo $fila['cantidad']; ?></td>
                         <td><?php echo $fila['fecha']; ?></td>
-                        
-                        <?php
-                        if($fila['estado'] == "Completado"){
-                          echo "<td>Completado</td>";
-                        }else{ ?>
-                          <td><?php echo $fila['estado']; ?></td>
-                          <td><a href="index.php?accion=completarPedido&id=<?php echo $fila['id']; ?>"><button>Completado</button></a></td>
-                        <?php } ?>
+                        <td><?php echo $fila['estado']; ?></td>
+                        <td>
+                          <form action="index.php?accion=cambiarEstadoPedido" method="POST">
+                            <input type="hidden" value="<?php echo $fila['id']; ?>" name="id">
+                            <select name="estado">
+                              <option value="Pendiente">Pendiente</option>
+                              <option value="Enviado">Enviado</option>
+                              <option value="Entregado">Entregado</option>
+                              <option value="Cancelado">Cancelado</option>
+                            </select>
+                            <input type="submit" value="Cambiar">
+                          </form>
+                        </td>
                       </tr>
             <?php
                 }
