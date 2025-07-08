@@ -1,3 +1,6 @@
+<?php
+if($_SESSION['rol'] == "admin"){
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,3 +74,9 @@
     </section>
 </body>
 </html>
+<?php
+}else{
+  echo "<script>alert('You can´t open this file');</script>";
+  header('location:index.php');
+}
+?>

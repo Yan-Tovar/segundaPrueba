@@ -1,10 +1,15 @@
 <?php
+if($_SESSION['rol'] == "admin"){
+?>
+<?php
 $categorias = [];
 $cantidadesP = [];
 $tipos = [];
 $cantidadesU = [];
 $cantidadClientes = [];
 $roles = [];
+$estados = [];
+$cantidadPedidos = [];
 if ($ventasTipo->num_rows > 0) {
     while ($fila = $ventasTipo->fetch_object()) {
         $tipos[] = $fila->tipo_nombre;
@@ -21,6 +26,12 @@ if ($clientesRegistrados->num_rows > 0) {
     while ($fila = $clientesRegistrados->fetch_object()) {
         $roles[] = $fila->rol;
         $cantidadClientes[] = $fila->cantidad;
+    }
+}
+if ($estadoPedidos->num_rows > 0) {
+    while ($fila = $estadoPedidos->fetch_object()) {
+        $estados[] = $fila->estado;
+        $cantidadPedidos[] = $fila->cantidad;
     }
 }
 ?>
@@ -80,7 +91,7 @@ if ($clientesRegistrados->num_rows > 0) {
         <canvas id="graficoCantidadProductosCategoria" class="grafico"></canvas>
         <script>
             const ctx2 = document.getElementById('graficoCantidadProductosCategoria').getContext('2d');
-            const graficoCitas = new Chart(ctx2, {
+            const graficoProductosC = new Chart(ctx2, {
                 type: 'bar',
                 data: {
                     labels: <?php echo json_encode($categorias); ?>,
@@ -105,8 +116,8 @@ if ($clientesRegistrados->num_rows > 0) {
 <!-- Gráfico de usuarios por rol -->
         <canvas id="graficoUsuariosPorRol" class="grafico"></canvas>
         <script>
-            const ctxRol = document.getElementById('graficoUsuariosPorRol').getContext('2d');
-            const graficoUsuarios = new Chart(ctxRol, {
+            const ctxRol3 = document.getElementById('graficoUsuariosPorRol').getContext('2d');
+            const graficoUsuarios = new Chart(ctxRol3, {
                 type: 'pie',
                 data: {
                     labels: <?php echo json_encode($roles); ?>,
@@ -135,5 +146,44 @@ if ($clientesRegistrados->num_rows > 0) {
                 }
             });
         </script>
+<!-- Gráfico de pedidos por estado -->
+        <canvas id="graficoPedidosPorEstado" class="grafico"></canvas>
+        <script>
+            const ctxRol4 = document.getElementById('graficoPedidosPorEstado').getContext('2d');
+            const graficoPedidos = new Chart(ctxRol4, {
+                type: 'doughnut',
+                data: {
+                    labels: <?php echo json_encode($estados); ?>,
+                    datasets: [{
+                        label: 'Pedidos por Estado',
+                        data: <?php echo json_encode($cantidadPedidos); ?>,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 206, 86)',
+                            'rgb(75, 192, 192)',
+                            'rgb(153, 102, 255)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        </script>
 </body>
 </html>
+<?php
+}else{
+  echo "<script>alert('You can´t open this file');</script>";
+  header('location:index.php');
+}
+?>

@@ -18,16 +18,86 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
-    public function filtrarProductos($idCategoria){
+    public function consultarProductosTotales($inicio, $cantidad){
         $conexion = new Conexion();
         $conexion->abrir();
-        $sql = "SELECT productos.*, categorias.nombre AS nombreCategoria FROM productos
-        JOIN categorias ON productos.id_categoria = categorias.id 
-        WHERE productos.id_categoria = '$idCategoria'";
+        $sql = "SELECT  productos.*,
+                        categorias.nombre AS nombreCategoria,
+                        tipo.nombre AS nombreTipo,
+                        GROUP_CONCAT(imagenes.nombre) AS imagenesProducto
+                    FROM productos
+                    JOIN tipo ON productos.tipo = tipo.id
+                    JOIN categorias ON productos.id_categoria = categorias.id
+                    LEFT JOIN imagenes ON productos.id = imagenes.id_producto
+                    GROUP BY productos.id
+                    LIMIT $inicio, $cantidad";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
         $conexion->cerrar();
         return $result;
+    }
+    public function filtrarBusqueda($busqueda, $inicio, $cantidad) {
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $busqueda = $conexion->obtenerConexion()->real_escape_string($busqueda);
+        $like = "'%" . $busqueda . "%'";
+
+        $sql = "SELECT productos.*, tipo.nombre AS tipo_nombre, categorias.nombre AS nombreCategoria,
+                    GROUP_CONCAT(imagenes.nombre) AS imagenesProducto
+                FROM productos
+                LEFT JOIN imagenes ON productos.id = imagenes.id_producto
+                LEFT JOIN tipo ON productos.tipo = tipo.id
+                LEFT JOIN categorias ON productos.id_categoria = categorias.id
+                WHERE productos.marca LIKE $like
+                OR productos.modelo LIKE $like
+                OR productos.especificaciones LIKE $like
+                OR productos.precio LIKE $like
+                OR tipo.nombre LIKE $like
+                OR categorias.nombre LIKE $like
+                GROUP BY productos.id
+                LIMIT $inicio, $cantidad";
+
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+    public function contarFiltrados($busqueda){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $busqueda = $conexion->obtenerConexion()->real_escape_string($busqueda);
+        $like = "'%" . $busqueda . "%'";
+        $sql = "SELECT COUNT(*) AS total
+                FROM productos
+                LEFT JOIN tipo ON productos.tipo = tipo.id
+                LEFT JOIN categorias ON productos.id_categoria = categorias.id
+                WHERE productos.marca LIKE $like
+                OR productos.modelo LIKE $like
+                OR productos.especificaciones LIKE $like
+                OR tipo.nombre LIKE $like
+                OR categorias.nombre LIKE $like";
+        $conexion->consulta($sql);
+        $resultado = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        if ($resultado && $fila = mysqli_fetch_assoc($resultado)) {
+            return (int)$fila['total'];
+        }
+        return 0;
+    }
+    public function contarFiltradosTotales(){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT COUNT(*) AS total
+                FROM productos
+                LEFT JOIN tipo ON productos.tipo = tipo.id
+                LEFT JOIN categorias ON productos.id_categoria = categorias.id ";
+        $conexion->consulta($sql);
+        $resultado = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        if ($resultado && $fila = mysqli_fetch_assoc($resultado)) {
+            return (int)$fila['total'];
+        }
+        return 0;
     }
     public function consultarPedidos(){
         $conexion = new Conexion();
@@ -106,10 +176,19 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
-        public function clientesRegistrados(){
+    public function clientesRegistrados(){
         $conexion = new Conexion();
         $conexion->abrir();
         $sql = "SELECT count(*) AS cantidad, rol FROM usuarios GROUP BY rol";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+    public function estadoPedidos(){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT count(*) AS cantidad, estado FROM pedidos GROUP BY estado";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
         $conexion->cerrar();

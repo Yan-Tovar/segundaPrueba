@@ -4,15 +4,21 @@ class Controlador{
         require_once $ruta;
     }
     public function listarProductos(){
+        $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $porPagina = isset($_GET['cantidad']) ? (int)$_GET['cantidad'] : 6;
+        $inicio = ($paginaActual - 1) * $porPagina;
         $gestor = new GestorProductos();
-        $result = $gestor->consultarProductos();
-        $categorias = $gestor->consultarCategorias();
+        $result = $gestor->consultarProductosTotales($inicio, $porPagina);
+        $totalResultados = $gestor->contarFiltradosTotales();
         require_once "Vista/html/catalogo.php";
     }
-    public function filtrarCategoria($idCategoria){
+    public function filtrarBusqueda($busqueda) {
+        $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $porPagina = isset($_GET['cantidad']) ? (int)$_GET['cantidad'] : 6;
+        $inicio = ($paginaActual - 1) * $porPagina;
         $gestor = new GestorProductos();
-        $result = $gestor->filtrarProductos($idCategoria);
-        $categorias = $gestor->consultarCategorias();
+        $result = $gestor->filtrarBusqueda($busqueda, $inicio, $porPagina);
+        $totalResultados = $gestor->contarFiltrados($busqueda);
         require_once "Vista/html/catalogo.php";
     }
     public function mostrarProducto($id){
@@ -38,6 +44,7 @@ class Controlador{
         $ventasTipo = $gestor->ventasPorTipo();
         $productosCategoria = $gestor->productosPorCategoria();
         $clientesRegistrados = $gestor->ClientesRegistrados();
+        $estadoPedidos = $gestor->estadoPedidos();
         require_once "Vista/html/estadisticas.php";
     }
     public function verProductos(){
@@ -148,6 +155,7 @@ class Controlador{
     echo "<script>alert('El producto se agregó correctamente')</script>";
     $productos = $gestor->consultarProductos();
     $categorias = $gestor->consultarCategorias();
+    $tipos = $gestor->consultarTipos();
     require_once "Vista/html/verProductos.php";
     }
     public function agregarImagenes($imagenes, $idP) {
