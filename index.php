@@ -112,11 +112,15 @@ if(isset($_GET['accion'])){
         $controlador->eliminarCategoria($_GET['id']);
     }elseif($_GET['accion'] == "agregarCategoria"){
         $controlador->agregarCategoria( $_POST['nombre']);
-    }elseif($_GET['accion'] == "filtrarCategoria"){
-        if($_POST['categoria'] == 'x'){
-            $controlador->listarProductos();
+    }elseif($_GET['accion'] == "filtrarBusqueda"){
+        if(isset($_GET['busqueda'])){
+            $controlador->filtrarBusqueda($_GET['busqueda']);
         }else{
-            $controlador->filtrarCategoria( $_POST['categoria']);
+            if($_POST['busqueda'] == null){
+                $controlador->listarProductos();
+            }else{
+                $controlador->filtrarBusqueda( $_POST['busqueda']);
+            }
         }
     }elseif($_GET['accion'] == "mostrarCategoria"){
         $controlador->mostrarCategoria( $_GET['id']);
