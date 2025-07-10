@@ -11,7 +11,7 @@ class GestorProductos{
                     JOIN tipo ON productos.tipo = tipo.id
                     JOIN categorias ON productos.id_categoria = categorias.id
                     LEFT JOIN imagenes ON productos.id = imagenes.id_producto
-                    GROUP BY productos.id;
+                    GROUP BY productos.id
                     ";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
@@ -107,6 +107,40 @@ class GestorProductos{
         JOIN productos ON pedidos.id_producto = productos.id";
         $conexion->consulta($sql);
         $result = $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+    public function consultarCarritoId($id_Usu){
+        $conexion = new Conexion();
+        $conexion->abrir();
+         $sql = "SELECT 
+                    productos.*,
+                    productos.id AS idProducto,
+                    categorias.nombre AS nombreCategoria,
+                    (SELECT SUM(carrito.cantidad) 
+                        FROM carrito 
+                        WHERE carrito.id_usuario = '$id_Usu' AND carrito.id_producto = productos.id
+                    ) AS cantidad,
+                    GROUP_CONCAT(DISTINCT imagenes.nombre) AS imagenesProducto
+                FROM productos 
+                JOIN categorias  ON productos.id_categoria = categorias.id
+                LEFT JOIN imagenes  ON productos.id = imagenes.id_producto
+                WHERE productos.id IN (
+                    SELECT id_producto FROM carrito WHERE id_usuario = '$id_Usu'
+                )
+                GROUP BY productos.id";
+
+        $conexion->consulta($sql);
+        $result= $conexion->obtenerResultado();
+        $conexion->cerrar();
+        return $result;
+    }
+    public function contarCarritoId($id_Usu){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "SELECT * FROM carrito WHERE id_usuario = '$id_Usu'";
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerFilasAfectadas();
         $conexion->cerrar();
         return $result;
     }
@@ -242,14 +276,50 @@ class GestorProductos{
         $conexion->cerrar();
         return $result;
     }
-    public function agregarPedido(Pedido $pedido ){
+    // public function agregarPedido(Pedido $pedido ){
+    //     $conexion = new Conexion();
+    //     $conexion->abrir();
+    //     $idU = $pedido->obtenerIdU();
+    //     $idP = $pedido->obtenerId();
+    //     $cantidad = $pedido->obtenerCantidad();
+    //     $fecha = $pedido->obtenerFecha();
+    //     for ($i = 0; $i < count($idP); $i++) {
+    //         $idP = $productos[$i];
+    //         $cantidad = $cantidades[$i];
+    //         $sql = "INSERT INTO pedidos VALUES(null, '$idU', '$idP', '$cantidad', '$fecha', 'Solicitado')";
+    //     }
+    //     $conexion->consulta($sql);
+    //     $result = $conexion->obtenerFilasAfectadas();
+    //     $conexion->cerrar();
+    //     return $result;
+    // }
+    public function agregarPedido(Pedido $pedido) {
         $conexion = new Conexion();
         $conexion->abrir();
-        $idU = $pedido->obtenerIdU();
-        $idP = $pedido->obtenerId();
-        $cantidad = $pedido->obtenerCantidad();
+
+        $idUsuario = $pedido->obtenerIdUsuario();
+        $productos = $pedido->obtenerProductos();
+        $cantidades = $pedido->obtenerCantidades();
         $fecha = $pedido->obtenerFecha();
-        $sql = "INSERT INTO pedidos VALUES(null, '$idU', '$idP', '$cantidad', '$fecha', 'Solicitado')";
+
+        for ($i = 0; $i < count($productos); $i++) {
+            $idProducto = $productos[$i];
+            $cantidad = $cantidades[$i];
+
+            $sql = "INSERT INTO pedidos VALUES (null, '$idUsuario', '$idProducto', '$cantidad', '$fecha', 'Solicitado')";
+            $conexion->consulta($sql);
+        }
+
+        $conexion->consulta($sql);
+        $result = $conexion->obtenerFilasAfectadas();
+        $conexion->cerrar();
+        return $result;
+    }
+
+     public function enviarCarrito($id, $cantidad , $id_usu){
+        $conexion = new Conexion();
+        $conexion->abrir();
+        $sql = "INSERT INTO carrito VALUES(null, '$id_usu', '$id', '$cantidad')";
         $conexion->consulta($sql);
         $result = $conexion->obtenerFilasAfectadas();
         $conexion->cerrar();

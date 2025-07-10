@@ -11,17 +11,31 @@ require_once "Modelo/Categoria.php";
 require_once "Modelo/Imagen.php";
 $controlador = new Controlador();
 
+if (isset($_SESSION['id'])){
+    $id_usu= $_SESSION['id'];
+}
+else{
+    $id_usu=0;
+}
+
 if(isset($_GET['accion'])){
     if($_GET['accion'] == "loginUsuario"){
         $controlador->loginUsuario($_POST['correo'], $_POST['contrasena']);
     }elseif($_GET['accion'] == "listarProductos"){
-        $controlador->listarProductos();
+        $controlador->listarProductos($id_usu);
     }elseif($_GET['accion'] == "solicitarProducto"){
         if($_POST['cantidad'] == null){
             $cantidad = 1;
-            $controlador->solicitarProducto($_POST['id'],$cantidad);
+            $controlador->solicitarProducto($_POST['id'],$cantidad, $id_usu);
         }else{
-            $controlador->solicitarProducto($_POST['id'],$_POST['cantidad']);
+            $controlador->solicitarProducto($_POST['id'],$_POST['cantidad'], $id_usu);
+        }
+    }elseif($_GET['accion'] == "enviarCarrito"){
+        if($_POST['cantidad'] == null){
+            $cantidad = 1;
+            $controlador->enviarCarrito($_POST['id'],$cantidad, $id_usu);
+        }else{
+            $controlador->enviarCarrito($_POST['id'],$_POST['cantidad'], $id_usu);
         }
     }elseif($_GET['accion'] == "verRegistrar"){
         $controlador->verPagina("Vista/html/formularioRegistro.php");
@@ -37,6 +51,8 @@ if(isset($_GET['accion'])){
         $controlador->verProductos();
     }elseif($_GET['accion'] == "verCategorias"){
         $controlador->verCategorias();
+    }elseif ($_GET['accion'] == "carrito"){
+        $controlador->verCarrito($id_usu);
     }elseif($_GET['accion'] == "registrarUsuario"){
         $controlador->registrarUsuario($_POST['nombre'], $_POST['correo'], $_POST['contrasena']);
     }elseif($_GET['accion'] == "mostrarProducto"){
@@ -117,9 +133,9 @@ if(isset($_GET['accion'])){
             $controlador->filtrarBusqueda($_GET['busqueda']);
         }else{
             if($_POST['busqueda'] == null){
-                $controlador->listarProductos();
+                $controlador->listarProductos($id_usu);
             }else{
-                $controlador->filtrarBusqueda( $_POST['busqueda']);
+                $controlador->filtrarBusqueda( $_POST['busqueda'],$id_usu);
             }
         }
     }elseif($_GET['accion'] == "mostrarCategoria"){
@@ -129,9 +145,19 @@ if(isset($_GET['accion'])){
     }elseif($_GET['accion'] == "cerrarSesion"){
         session_unset();
         session_destroy();
-        $controlador->listarProductos();
+        $controlador->listarProductos($id_usu);
+    }elseif($_GET['accion'] == "compraPedido"){
+        echo "<pre>";
+        var_dump($_POST);
+        echo "</pre>";
+        $controlador->compraPedido(
+            
+            $_POST['idUsuario'], 
+            $_POST['id_producto'], 
+            $_POST['cantidad']
+        );
     }
 }else{
-    $controlador->listarProductos();
+    $controlador->listarProductos($id_usu);
 }
 ?>

@@ -24,6 +24,21 @@ $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
             <?php }else{ ?>
                 <a href="index.php?accion=verLoginA">Zona Admin</a>
             <?php } ?>
+            <div class="usuario">
+                <a href="index.php?accion=carrito">
+                    <img src="Vista/img/images.png" width="50px" alt="feoo">
+                    <?php if ($pedido == 0 ){
+                        ?><p>(0)</p>
+                    <?php
+                    }
+                    else{
+                        ?><p>(<?php echo $pedido; ?>)</p> 
+                    <?php
+                    }
+                    ?>
+                    
+                </a>
+            </div>
         </nav>
     </header>
     <!-- Listado de productos -->
@@ -78,11 +93,11 @@ $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
                 <p>Especificaciones: <?php echo $fila['especificaciones']; ?></p>
                 <p>$<?php echo $fila['precio']; ?></p>
 
-                <form class="none" action="index.php?accion=solicitarProducto" method="POST">
+                <form class="none" action="index.php?accion=enviarCarrito" method="POST">
                     <input type="hidden" name="id" value="<?php echo $fila['id']; ?>">
                     <?php if (isset($_SESSION['id'])) { ?>
                         <input type="number" name="cantidad" placeholder="Cantidad +1">
-                        <button>Solicitar Compra</button>
+                        <button>Agregar al carrito</button>
                     <?php } else { ?>
                         <a href="index.php?accion=verLoginU">Iniciar Sesión o Registrarse</a>
                     <?php } ?>

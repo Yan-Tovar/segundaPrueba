@@ -3,22 +3,24 @@ class Controlador{
     public function verPagina($ruta){
         require_once $ruta;
     }
-    public function listarProductos(){
+    public function listarProductos($id_usu){
         $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         $porPagina = isset($_GET['cantidad']) ? (int)$_GET['cantidad'] : 6;
         $inicio = ($paginaActual - 1) * $porPagina;
         $gestor = new GestorProductos();
         $result = $gestor->consultarProductosTotales($inicio, $porPagina);
         $totalResultados = $gestor->contarFiltradosTotales();
+        $pedido = $gestor->contarCarritoId($id_usu);
         require_once "Vista/html/catalogo.php";
     }
-    public function filtrarBusqueda($busqueda) {
+    public function filtrarBusqueda($busqueda, $id_usu) {
         $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         $porPagina = isset($_GET['cantidad']) ? (int)$_GET['cantidad'] : 6;
         $inicio = ($paginaActual - 1) * $porPagina;
         $gestor = new GestorProductos();
         $result = $gestor->filtrarBusqueda($busqueda, $inicio, $porPagina);
         $totalResultados = $gestor->contarFiltrados($busqueda);
+        $pedido = $gestor->contarCarritoId($id_usu);
         require_once "Vista/html/catalogo.php";
     }
     public function mostrarProducto($id){
@@ -59,6 +61,12 @@ class Controlador{
         $categorias = $gestor->consultarCategorias();
         require_once "Vista/html/verCategorias.php";
     }
+    public function verCarrito($id_usu){
+        $gestor = new GestorProductos();
+        $result = $gestor->consultarCarritoId($id_usu);
+        $pedido = $gestor->contarCarritoId($id_usu);
+        require_once "Vista/html/verCarrito.php";
+    }
     public function editarProducto($id, $marca, $modelo, $tipo, $especificaciones, $precio, $categoria){
         $gestor = new GestorProductos();
         $result = $gestor->editarProducto($id, $marca, $modelo, $tipo, $especificaciones, $precio, $categoria);
@@ -87,15 +95,25 @@ class Controlador{
             require_once "Vista/html/verCategorias.php";
         } 
     }
-    public function solicitarProducto($id, $cantidad){
-        $idUsuario = $_SESSION['id'];
+     public function compraPedido($id_usu,  $cantidad, $idProducto ){
         $fecha = date("Y-m-d");
-        $pedido = new Pedido($idUsuario, $id, $cantidad, $fecha);
+        $pedido = new Pedido($id_usu, $idProducto, $cantidad, $fecha);
         $gestor = new GestorProductos();
         $result = $gestor->agregarPedido($pedido);
         echo "<script>alert('El pedido se agregó correctamente')</script>";
         $result = $gestor->consultarProductos();
         $categorias = $gestor->consultarCategorias();
+        $pedido = $gestor->contarCarritoId($id_usu);
+        require_once "Vista/html/verCarrito.php";
+    }
+    public function enviarCarrito($id, $cantidad , $id_usu){
+        $gestor = new GestorProductos();
+        $result = $gestor->enviarCarrito($id, $cantidad , $id_usu);
+        echo "<script>alert('El pedido se agregó correctamente')</script>";
+        $result = $gestor->consultarProductos();
+        $categorias = $gestor->consultarCategorias();
+        $pedido = $gestor->contarCarritoId($id_usu);
+        $totalResultados = $gestor->contarFiltradosTotales();
         require_once "Vista/html/catalogo.php";
     }
     public function loginUsuario($correo, $contrasena){
@@ -113,7 +131,9 @@ class Controlador{
                 }else{
                     $gestor = new GestorProductos();
                     $result = $gestor->consultarProductos();
+                    $totalResultados = $gestor->contarFiltradosTotales();
                     $categorias = $gestor->consultarCategorias();
+                    $pedido = $gestor->contarCarritoId($_SESSION['id']);
                     require_once "Vista/html/catalogo.php";
                 }
             }else{

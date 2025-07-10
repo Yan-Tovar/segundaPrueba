@@ -1,25 +1,30 @@
 <?php
-class Pedido{
+class Pedido {
     private $idUsuario;
-    private $id;
-    private $cantidad;
+    private $productos;    // array de IDs de productos
+    private $cantidades;   // array de cantidades
     private $fecha;
-    public function __construct($idU, $id, $canti, $fech){
-        $this->idUsuario = $idU;
-        $this->id = $id;
-        $this->cantidad = $canti;
-        $this->fecha = $fech;
+
+    public function __construct($idUsuario, $productos, $cantidades, $fecha) {
+        $this->idUsuario = $idUsuario;
+        $this->productos = $productos;
+        $this->cantidades = $cantidades;
+        $this->fecha = $fecha;
     }
-    public function obtenerIdU(){
+
+    public function obtenerIdUsuario() {
         return $this->idUsuario;
     }
-    public function obtenerId(){
-        return $this->id;
+
+    public function obtenerProductos() {
+        return $this->productos;
     }
-    public function obtenerCantidad(){
-        return $this->cantidad;
+
+    public function obtenerCantidades() {
+        return $this->cantidades;
     }
-    public function obtenerFecha(){
+
+    public function obtenerFecha() {
         return $this->fecha;
     }
 }
